@@ -1,0 +1,55 @@
+startuml
+!define DARKBLUE
+!includeurl https://github.com/Drakemor/RedDress-PlantUML
+
+title Project File Analyzer\nClass Diagram
+
+'CLASSES
+
+class App {
+    + main(String[] args): void
+}
+
+package "filecomposite" {
+    interface FileComposite {
+        + getName(): String
+        + isDirectory(): boolean
+    }
+}
+
+package "fileparser" {
+    interface FileParserElement implements FileElement {
+        + parse(ReportType report): ReportType
+    }
+
+    class DirectoryParser implements FileParserElement{
+    }
+
+    class FileParser FileParserElement {
+    }
+
+}
+
+package "reporttools" {
+
+    interface ReportType implements FileElement {
+      + write(): void
+    }
+
+    class CountReport implements ReportType {
+    }
+
+    class LineReport implements ReportType {
+    }
+
+    class LineMatcher {
+        + match(): boolean
+    }
+
+}
+
+
+'CONNECTIONS
+
+
+@enduml
