@@ -2,6 +2,7 @@ package edu.curtin.projectfileanalyzer.directoryvalidator;
 
 import edu.curtin.projectfileanalyzer.DirectoryPathException;
 import java.io.File;
+import java.util.logging.Logger;
 
 /**
  * Validates directories entered by the user. Valid and default directories are
@@ -10,6 +11,7 @@ import java.io.File;
  * @author Kyer Potts
  */
 public class DirectoryValidator {
+  private static final Logger logger = Logger.getLogger(DirectoryValidator.class.getName());
 
   /**
    * Checks to see whether the default path is required.
@@ -18,15 +20,21 @@ public class DirectoryValidator {
    *             is executed.
    */
   public String determinePath(String[] path) throws DirectoryPathException {
+    // There should only ever be 0 or 1 arguments supplied by the user
     if (path.length > 1) {
+      logger.severe(() -> "User supplied " + path.length +
+          " arguments when program was executed.");
+
       throw new DirectoryPathException(
           "The CLI only accepts a single argument as a path");
     }
+
     String usablePath = "";
+
     if (path.length < 1) { // Use default path
       usablePath = System.getProperty("user.dir");
-    } else if (path.length == 1) {
-      usablePath = path[0]; // Use first argument as path
+    } else if (path.length == 1) { // Use first argument as path
+      usablePath = path[0];
     }
     return usablePath;
   }
@@ -38,14 +46,19 @@ public class DirectoryValidator {
    *
    */
   public boolean isValidPath(File root) {
-    if (!root.exists()) {
+    if (!root.exists()) { // Path must point to a file/folder
+      logger.warning(
+          () -> root.getPath() + "Supplied path does not point to a file");
       return false;
     }
 
-    if (root.isDirectory()) {
+    if (root.isDirectory()) { // Path must point to a directory
+      logger.info(() -> root.getPath() + "Supplied path points to a directory");
       return true;
     }
 
+    logger.warning(
+        () -> root.getPath() + "Supplied path does not point to a directory");
     return false;
   }
 }
