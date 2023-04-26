@@ -1,5 +1,5 @@
-# Created by https://www.toptal.com/developers/gitignore/api/gradle,java
-# Edit at https://www.toptal.com/developers/gitignore?templates=gradle,java
+# Created by https://www.toptal.com/developers/gitignore/api/java,gradle
+# Edit at https://www.toptal.com/developers/gitignore?templates=java,gradle
 
 ### Java ###
 # Compiled class file
@@ -53,3 +53,5 @@ gradle-app.setting
 ### Gradle Patch ###
 # Java heap dump
 *.hprof
+
+# End of https://www.toptal.com/developers/gitignore/api/java,gradle
