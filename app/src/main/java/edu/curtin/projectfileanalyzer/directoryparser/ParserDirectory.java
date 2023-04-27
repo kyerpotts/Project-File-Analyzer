@@ -7,7 +7,7 @@ import edu.curtin.projectfileanalyzer.report.ReportComposite;
  *
  * @author Kyer Potts
  */
-public class ParserDirectory implements FileParserElement {
+public class ParserDirectory implements FileParserComposite {
 
   @Override
   public String getName() {
@@ -18,7 +18,8 @@ public class ParserDirectory implements FileParserElement {
   @Override
   public boolean isDirectory() {
     // TODO: Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'isDirectory'");
+    throw new UnsupportedOperationException(
+        "Unimplemented method 'isDirectory'");
   }
 
   @Override

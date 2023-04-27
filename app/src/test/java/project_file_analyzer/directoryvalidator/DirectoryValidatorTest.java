@@ -14,9 +14,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class DirectoryValidatorTest {
-  DirectoryValidator classUnderTest;
-  File root;
-  String[] args;
+  private DirectoryValidator classUnderTest;
+  private File root;
+  private String[] args;
 
   @Before
   public void setup() {
@@ -25,14 +25,14 @@ public class DirectoryValidatorTest {
   }
 
   /**
-   * Test behavioiur that a default path is provided when one is not supplied by
+   * Test behaviour that a default path is provided when one is not supplied by
    * the user
    *
    * @result The default path should be the directory that the program is
    *         executed within
    */
   @Test
-  public void getDefaultPath() throws DirectoryPathException {
+  public void testGetDefaultPath() throws DirectoryPathException {
     // Empty string array mimics program being run without args
     args = new String[0];
     // user.dir returns the path of the directory the program is being run in
@@ -49,7 +49,7 @@ public class DirectoryValidatorTest {
    *         the program when executed from the CLI are valid
    */
   @Test
-  public void getSuppliedPath() throws DirectoryPathException {
+  public void testGetSuppliedPath() throws DirectoryPathException {
     // Array should mimic sprogram being run with a single arg
     args = new String[1];
     args[0] = "TestPath";
@@ -66,7 +66,8 @@ public class DirectoryValidatorTest {
    *
    */
   @Test(expected = DirectoryPathException.class)
-  public void exceptionThrownIfCLIArgsInvalid() throws DirectoryPathException {
+  public void testExceptionThrownIfCLIArgsInvalid()
+      throws DirectoryPathException {
     args = new String[2];
     classUnderTest.determinePath(args);
   }
@@ -77,7 +78,7 @@ public class DirectoryValidatorTest {
    * @result When the path supplied by the user is valid it must be used
    */
   @Test
-  public void validatesPathForValidDirectory() {
+  public void testValidatesPathForValidDirectory() {
     // The File object has been constructed with a valid path
     when(root.exists()).thenReturn(true);
     // The path supplied to the File object points to a directory
@@ -95,7 +96,7 @@ public class DirectoryValidatorTest {
    *         directory, it should not be used to build a parser object
    */
   @Test
-  public void validatesFalseForInvalidDirectory() {
+  public void testValidatesFalseForInvalidDirectory() {
     // The File object has been constructed with a valid path
     when(root.exists()).thenReturn(true);
     // The path supplied to the File object points to a directory
@@ -113,7 +114,7 @@ public class DirectoryValidatorTest {
    *         directory, it should not be used at all
    */
   @Test
-  public void validatesFalseForNonExistentDirectory() {
+  public void testValidatesFalseForNonExistentDirectory() {
     // The File object has been constructed with a valid path
     when(root.exists()).thenReturn(false);
     // The path supplied to the File object points to a directory

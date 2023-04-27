@@ -8,6 +8,6 @@ import edu.curtin.projectfileanalyzer.report.ReportComposite;
  *
  * @author Kyer Potts
  */
-public interface FileParserElement extends FileComposite {
+public interface FileParserComposite extends FileComposite {
   public void parse(ReportComposite report);
 }

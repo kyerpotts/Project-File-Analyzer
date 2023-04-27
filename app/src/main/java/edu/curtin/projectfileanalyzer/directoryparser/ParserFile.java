@@ -8,7 +8,7 @@ import edu.curtin.projectfileanalyzer.report.ReportComposite;
  *
  * @author Kyer Potts
  */
-public class ParserFile implements FileParserElement {
+public class ParserFile implements FileParserComposite {
 
   @Override
   public String getName() {

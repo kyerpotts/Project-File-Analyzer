@@ -11,7 +11,7 @@ import java.util.logging.Logger;
  * @author Kyer Potts
  */
 public class DirectoryValidator {
-  private static final Logger logger = Logger.getLogger(DirectoryValidator.class.getName());
+  private static final Logger LOGGER = Logger.getLogger(DirectoryValidator.class.getName());
 
   /**
    * Checks to see whether the default path is required.
@@ -22,7 +22,7 @@ public class DirectoryValidator {
   public String determinePath(String[] path) throws DirectoryPathException {
     // There should only ever be 0 or 1 arguments supplied by the user
     if (path.length > 1) {
-      logger.severe(() -> "User supplied " + path.length +
+      LOGGER.severe(() -> "User supplied " + path.length +
           " arguments when program was executed.");
 
       throw new DirectoryPathException(
@@ -47,17 +47,17 @@ public class DirectoryValidator {
    */
   public boolean isValidPath(File root) {
     if (!root.exists()) { // Path must point to a file/folder
-      logger.warning(
-          () -> root.getPath() + "Supplied path does not point to a file");
+      LOGGER.warning(
+          () -> root.getPath() + " Supplied path does not point to a file");
       return false;
     }
 
     if (root.isDirectory()) { // Path must point to a directory
-      logger.info(() -> root.getPath() + "Supplied path points to a directory");
+      LOGGER.info(() -> root.getPath() + "Supplied path points to a directory");
       return true;
     }
 
-    logger.warning(
+    LOGGER.warning(
         () -> root.getPath() + "Supplied path does not point to a directory");
     return false;
   }

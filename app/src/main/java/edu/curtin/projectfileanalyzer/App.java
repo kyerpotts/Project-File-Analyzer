@@ -3,11 +3,37 @@
  */
 package edu.curtin.projectfileanalyzer;
 
+import edu.curtin.projectfileanalyzer.directoryparser.FileParserComposite;
+// import edu.curtin.projectfileanalyzer.directoryparser.FileParserComposite;
+import edu.curtin.projectfileanalyzer.directoryvalidator.DirectoryValidator;
+import java.io.File;
+
 public class App {
     public static void main(String[] args) {
-        if (args.length > 0)
-            System.out.println(args[0]);
-        else
-            System.out.println("Nothing here");
+        File rootFile;
+        DirectoryValidator dirValidator = new DirectoryValidator();
+        boolean executeProgram = false; // Determines whether program can continue without major errors
+
+        try {
+            // Retrieve the path provided by the user or set default path (current
+            // directory)
+            rootFile = new File(dirValidator.determinePath(args));
+            // Check that path points to valid directory
+            executeProgram = dirValidator.isValidPath(rootFile);
+        } catch (DirectoryPathException e) {
+            // The use has entered to many args when executing the program
+            System.out.println("FATAL ERROR: " + e.getMessage());
+            return;
+        }
     }
+
+    private FileParserComposite buildParser(File rootFile) {
+        FileParserComposite fileParser = null;
+
+        return fileParser;
+    }
+
+    // private void executeMenu(FileParserComposite fileParser) {
+    // boolean continueMenuLoop = true;
+    // }
 }

@@ -18,10 +18,6 @@ public class AppTest {
     }
 
     @Test
-    public void appGetsDefaultFilePath() {
-    }
-
-    @Test
-    public void greetIsValid() {
+    public void appBuildsParserCorrectly() {
     }
 }
