@@ -1,7 +1,7 @@
 /*
  * Tests the main entry point into the app
  */
-package project_file_analyzer;
+package projectfileanalyzer;
 
 // import static org.junit.Assert.*;
 

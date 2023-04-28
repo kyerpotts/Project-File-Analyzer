@@ -1,7 +1,7 @@
 /*
  * Tests the file validator class
  */
-package project_file_analyzer.directoryvalidator;
+package projectfileanalyzer.directoryvalidator;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;

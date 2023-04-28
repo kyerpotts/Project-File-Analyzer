@@ -4,7 +4,8 @@
 package edu.curtin.projectfileanalyzer;
 
 import edu.curtin.projectfileanalyzer.directoryparser.FileParserComposite;
-// import edu.curtin.projectfileanalyzer.directoryparser.FileParserComposite;
+import edu.curtin.projectfileanalyzer.directoryparser.ParserDirectory;
+import edu.curtin.projectfileanalyzer.directoryparser.ParserFile;
 import edu.curtin.projectfileanalyzer.directoryvalidator.DirectoryValidator;
 import java.io.File;
 
@@ -25,15 +26,46 @@ public class App {
             System.out.println("FATAL ERROR: " + e.getMessage());
             return;
         }
+
+        if (executeProgram == true) {
+            ParserDirectory rootParser = new ParserDirectory(rootFile.getName());
+            buildFileParser(rootFile, rootParser);
+        }
     }
 
-    private FileParserComposite buildParser(File rootFile) {
-        FileParserComposite fileParser = null;
-
-        return fileParser;
+    /**
+     * Builds a FileParser tree structure recursively
+     *
+     * @param directory the current File object that the function is recursing
+     *                  over. This must always be a directory
+     * @param parent    The current ParserDirectory that the function is
+     *                  recursively
+     *                  adding new children to
+     */
+    private static void buildFileParser(File directory, ParserDirectory parent) {
+        // Iterates through the files contained within the directory given and
+        // creates a ParserFile and adds the content of the file, or creates a
+        // ParserDirectory and calls the buildFileParser function recursively to
+        // continue generating the tree structure. This ensures that all files and
+        // directories contained within root are built into the FileParserComposite
+        // tree.
+        for (File file : directory.listFiles()) {
+            if (file.isFile()) {
+                ParserFile newParserFile = new ParserFile(file.getName());
+                newParserFile.addFileData(file);
+                parent.addChild(newParserFile);
+            } else if (file.isDirectory()) {
+                ParserDirectory newParent = new ParserDirectory(file.getName());
+                parent.addChild(newParent);
+                // Calls this function recursively on the currently obtained File and
+                // newly created ParentDirectory to ensure that the FileParserComposite
+                // tree is completely built
+                buildFileParser(file, newParent);
+            }
+        }
     }
 
-    // private void executeMenu(FileParserComposite fileParser) {
-    // boolean continueMenuLoop = true;
-    // }
+    private void executeMenu(FileParserComposite fileParser) {
+        boolean continueMenuLoop = true;
+    }
 }
