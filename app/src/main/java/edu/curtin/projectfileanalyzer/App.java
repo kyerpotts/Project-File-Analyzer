@@ -7,8 +7,10 @@ import edu.curtin.projectfileanalyzer.directoryparser.FileParserComposite;
 import edu.curtin.projectfileanalyzer.directoryparser.ParserDirectory;
 import edu.curtin.projectfileanalyzer.directoryparser.ParserFile;
 import edu.curtin.projectfileanalyzer.directoryvalidator.DirectoryValidator;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.logging.Logger;
 
 public class App {
@@ -35,6 +37,7 @@ public class App {
         if (executeProgram == true) {
             ParserDirectory rootParser = new ParserDirectory(rootFile.getName());
             buildFileParser(rootFile, rootParser);
+            executeMenu(rootParser);
         }
     }
 
@@ -78,7 +81,46 @@ public class App {
         LOGGER.info("Parser directory " + parent.getName() + " completed.");
     }
 
-    // private void executeMenu(FileParserComposite fileParser) {
-    // boolean continueMenuLoop = true;
-    // }
+    private static void executeMenu(FileParserComposite fileParser) {
+        BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+        String userInput = "";
+        boolean continueMenuLoop = true;
+        while (continueMenuLoop) {
+            System.out.println("Please choose from the following options:");
+            System.out.println("1: Set Report Criteria");
+            System.out.println("2: Set Report Output Format");
+            System.out.println("3: Generate Report");
+            System.out.println("4: Quit");
+            try {
+                userInput = input.readLine();
+
+            } catch (IOException e) {
+                LOGGER.warning(() -> "User input error: " + e.getMessage());
+            }
+            // Guard condition ensures switch case is not reading a null value from
+            // the userInput variable
+            if (userInput == null) {
+                userInput = "";
+            }
+
+            switch (userInput) {
+                case "1":
+                    // TODO: build criteriaSelection method
+                    break;
+                case "2":
+                    // TODO: build reportOutput method
+                    break;
+                case "3":
+                    // TODO: build generateReport method
+                    break;
+                case "4":
+                    continueMenuLoop = false;
+                    break;
+                default:
+                    System.out.println("Invalid menu option");
+                    break;
+            }
+        }
+        System.out.println("Exiting Project File Analyzer. Goodbye.");
+    }
 }
