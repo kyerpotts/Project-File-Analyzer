@@ -53,12 +53,13 @@ public class DirectoryValidator {
     }
 
     if (root.isDirectory()) { // Path must point to a directory
-      LOGGER.info(() -> root.getPath() + "Supplied path points to a directory");
+      LOGGER.info(
+          () -> root.getPath() + " Supplied path points to a directory");
       return true;
     }
 
     LOGGER.warning(
-        () -> root.getPath() + "Supplied path does not point to a directory");
+        () -> root.getPath() + " Supplied path does not point to a directory");
     return false;
   }
 }

@@ -3,6 +3,7 @@ package edu.curtin.projectfileanalyzer.directoryparser;
 import edu.curtin.projectfileanalyzer.report.ReportComposite;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * ParserDirectory is the representation of a file directory utilized for
@@ -11,6 +12,8 @@ import java.util.List;
  * @author Kyer Potts
  */
 public class ParserDirectory implements FileParserComposite {
+  // TODO: Log appropriately through the methods contained in this class
+  private static final Logger LOGGER = Logger.getLogger(ParserDirectory.class.getName());
   private String name;
   private List<FileParserComposite> children;
 
@@ -24,24 +27,14 @@ public class ParserDirectory implements FileParserComposite {
   public ParserDirectory(String name) {
     this.name = name;
     children = new ArrayList<>();
+    LOGGER.info("Parser Directory: " + this.name + " successfully created");
   }
 
-  /**
-   * Must return unqualified path as the name in the context of the parser
-   *
-   * @return the name (unqualified path) of this directory
-   */
   @Override
   public String getName() {
     return this.name;
   }
 
-  /**
-   * Must return true for ParserDirectory. This method is used to determine how
-   * it is replicated in the report tree structure
-   *
-   * @return True as is a directory
-   */
   @Override
   public boolean isDirectory() {
     // ParserDirectory is a directory
@@ -69,5 +62,7 @@ public class ParserDirectory implements FileParserComposite {
    */
   public void addChild(FileParserComposite child) {
     children.add(child);
+    LOGGER.info(child.getName() +
+        " successfully added to parent: " + this.name);
   }
 }

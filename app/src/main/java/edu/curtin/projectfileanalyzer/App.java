@@ -8,8 +8,13 @@ import edu.curtin.projectfileanalyzer.directoryparser.ParserDirectory;
 import edu.curtin.projectfileanalyzer.directoryparser.ParserFile;
 import edu.curtin.projectfileanalyzer.directoryvalidator.DirectoryValidator;
 import java.io.File;
+import java.io.IOException;
+import java.util.logging.Logger;
 
 public class App {
+    // TODO: Log appropriately throughout this class
+    private static final Logger LOGGER = Logger.getLogger(App.class.getName());
+
     public static void main(String[] args) {
         File rootFile;
         DirectoryValidator dirValidator = new DirectoryValidator();
@@ -43,6 +48,7 @@ public class App {
      *                  adding new children to
      */
     private static void buildFileParser(File directory, ParserDirectory parent) {
+        LOGGER.info("Building parser directory " + parent.getName() + ".");
         // Iterates through the files contained within the directory given and
         // creates a ParserFile and adds the content of the file, or creates a
         // ParserDirectory and calls the buildFileParser function recursively to
@@ -52,7 +58,13 @@ public class App {
         for (File file : directory.listFiles()) {
             if (file.isFile()) {
                 ParserFile newParserFile = new ParserFile(file.getName());
-                newParserFile.addFileData(file);
+                try {
+                    newParserFile.addFileData(file);
+                } catch (IOException e) {
+                    System.out.println(
+                            "Problem adding data to" + newParserFile.getName() +
+                                    " occured. Parser tree data may not be accurate for the purposes of reporting.");
+                }
                 parent.addChild(newParserFile);
             } else if (file.isDirectory()) {
                 ParserDirectory newParent = new ParserDirectory(file.getName());
@@ -63,9 +75,10 @@ public class App {
                 buildFileParser(file, newParent);
             }
         }
+        LOGGER.info("Parser directory " + parent.getName() + " completed.");
     }
 
-    private void executeMenu(FileParserComposite fileParser) {
-        boolean continueMenuLoop = true;
-    }
+    // private void executeMenu(FileParserComposite fileParser) {
+    // boolean continueMenuLoop = true;
+    // }
 }

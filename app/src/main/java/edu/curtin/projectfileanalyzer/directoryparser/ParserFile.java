@@ -1,9 +1,13 @@
 package edu.curtin.projectfileanalyzer.directoryparser;
 
 import edu.curtin.projectfileanalyzer.report.ReportComposite;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Represents a file that has been read to memory by the parser.
@@ -11,6 +15,8 @@ import java.util.List;
  * @author Kyer Potts
  */
 public class ParserFile implements FileParserComposite {
+  // TODO: Log appropriately throughout this class
+  private static final Logger LOGGER = Logger.getLogger(ParserFile.class.getName());
   private String name;
   private List<Line> lines;
 
@@ -24,6 +30,7 @@ public class ParserFile implements FileParserComposite {
   public ParserFile(String name) {
     this.name = name;
     lines = new ArrayList<Line>();
+    LOGGER.info(() -> "File: " + this.name + " successfully created");
   }
 
   @Override
@@ -49,7 +56,23 @@ public class ParserFile implements FileParserComposite {
    * @param file an object that contains a reference to a file and all of the
    *             data contained within
    */
-  public void addFileData(File file) {
+  public void addFileData(File file) throws IOException {
+    try (BufferedReader fileReader = new BufferedReader(new FileReader(file))) {
+      int lineNumber = 0; // Initialised at 0 in case the file is empty
+      String lineContent;
+      // Reads lines from the file into lineContent until all of the file
+      // contents have been read
+      while ((lineContent = fileReader.readLine()) != null) {
+        lineNumber++; // lineNumber must be incremented to accurately represent
+                      // the line location
+        addNewLine(lineNumber, lineContent);
+      }
+    } catch (IOException e) {
+      LOGGER.warning(
+          () -> "Could not read contents of file: " + this.name +
+              ". Parser will not accurately depict complete file tree.");
+      throw e;
+    }
   }
 
   /**
@@ -61,5 +84,7 @@ public class ParserFile implements FileParserComposite {
   private void addNewLine(int lineNumber, String lineContent) {
     Line newLine = new Line(lineNumber, lineContent);
     lines.add(newLine);
+    LOGGER.info(
+        () -> "Line: " + lineNumber + " succesfully added in " + this.name);
   }
 }
