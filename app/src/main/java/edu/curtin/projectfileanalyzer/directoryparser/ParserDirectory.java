@@ -27,7 +27,8 @@ public class ParserDirectory implements FileParserComposite {
   public ParserDirectory(String name) {
     this.name = name;
     children = new ArrayList<>();
-    LOGGER.info("Parser Directory: " + this.name + " successfully created");
+    LOGGER.info(
+        () -> "Parser Directory: " + this.name + " successfully created");
   }
 
   @Override
@@ -62,7 +63,7 @@ public class ParserDirectory implements FileParserComposite {
    */
   public void addChild(FileParserComposite child) {
     children.add(child);
-    LOGGER.info(child.getName() +
-        " successfully added to parent: " + this.name);
+    LOGGER.info(
+        () -> child.getName() + " successfully added to parent: " + this.name);
   }
 }

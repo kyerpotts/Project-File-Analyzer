@@ -29,7 +29,7 @@ public class ParserFile implements FileParserComposite {
    */
   public ParserFile(String name) {
     this.name = name;
-    lines = new ArrayList<Line>();
+    lines = new ArrayList<>();
     LOGGER.info(() -> "Parser File: " + this.name + " successfully created");
   }
 

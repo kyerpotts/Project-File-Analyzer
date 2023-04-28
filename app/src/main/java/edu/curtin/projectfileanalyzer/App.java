@@ -7,6 +7,8 @@ import edu.curtin.projectfileanalyzer.directoryparser.FileParserComposite;
 import edu.curtin.projectfileanalyzer.directoryparser.ParserDirectory;
 import edu.curtin.projectfileanalyzer.directoryparser.ParserFile;
 import edu.curtin.projectfileanalyzer.directoryvalidator.DirectoryValidator;
+import edu.curtin.projectfileanalyzer.matcher.CriteriaMatcher;
+import edu.curtin.projectfileanalyzer.matcher.MatcherBuilder;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -18,7 +20,7 @@ public class App {
     private static final Logger LOGGER = Logger.getLogger(App.class.getName());
 
     public static void main(String[] args) {
-        File rootFile;
+        File rootFile = null;
         DirectoryValidator dirValidator = new DirectoryValidator();
         boolean executeProgram = false; // Determines whether program can continue without major errors
 
@@ -31,13 +33,17 @@ public class App {
         } catch (DirectoryPathException e) {
             // The use has entered to many args when executing the program
             System.out.println("FATAL ERROR: " + e.getMessage());
-            return;
         }
 
         if (executeProgram == true) {
             ParserDirectory rootParser = new ParserDirectory(rootFile.getName());
             buildFileParser(rootFile, rootParser);
             executeMenu(rootParser);
+        } else {
+            System.out.println(
+                    "Provided path does not point to a directory on this system: " +
+                            rootFile.getName());
+            System.out.println("Please check the path and try again.");
         }
     }
 
@@ -51,7 +57,7 @@ public class App {
      *                  adding new children to
      */
     private static void buildFileParser(File directory, ParserDirectory parent) {
-        LOGGER.info("Building parser directory " + parent.getName() + ".");
+        LOGGER.info(() -> "Building parser directory " + parent.getName() + ".");
         // Iterates through the files contained within the directory given and
         // creates a ParserFile and adds the content of the file, or creates a
         // ParserDirectory and calls the buildFileParser function recursively to
@@ -78,7 +84,7 @@ public class App {
                 buildFileParser(file, newParent);
             }
         }
-        LOGGER.info("Parser directory " + parent.getName() + " completed.");
+        LOGGER.info(() -> "Parser directory " + parent.getName() + " completed.");
     }
 
     private static void executeMenu(FileParserComposite fileParser) {
@@ -103,9 +109,10 @@ public class App {
                 userInput = "";
             }
 
+            CriteriaMatcher criteriaMatcher;
             switch (userInput) {
                 case "1":
-                    // TODO: build criteriaSelection method
+                    criteriaMatcher = addCriteria(input);
                     break;
                 case "2":
                     // TODO: build reportOutput method
@@ -122,5 +129,27 @@ public class App {
             }
         }
         System.out.println("Exiting Project File Analyzer. Goodbye.");
+        try {
+            input.close();
+        } catch (IOException e) {
+            LOGGER.severe(() -> e.getMessage());
+        }
+    }
+
+    /**
+     * Method allows the user to add criteria to the report
+     *
+     * @param input An input reader to allow the user to enter criteria from the
+     *              keyboard.
+     * @return CriteriaMatcher with completed LineMatcher objects based on user
+     *         entered criteria.
+     */
+    private static CriteriaMatcher addCriteria(BufferedReader input) {
+        MatcherBuilder matcherBuilder = new MatcherBuilder();
+        // Request criteria from the user
+        matcherBuilder.requestMatcherInput(input);
+        // The CriteriaMatcher object must be returned so it can be given to the
+        // ReportType object
+        return matcherBuilder.buildCriteriaMatcher();
     }
 }
