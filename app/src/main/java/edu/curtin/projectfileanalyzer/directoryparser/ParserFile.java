@@ -34,7 +34,7 @@ public class ParserFile implements FileParserComposite {
   }
 
   @Override
-  public String getName() {
+  public String getValue() {
     return this.name;
   }
 

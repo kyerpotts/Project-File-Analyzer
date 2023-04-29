@@ -32,7 +32,7 @@ public class ParserDirectory implements FileParserComposite {
   }
 
   @Override
-  public String getName() {
+  public String getValue() {
     return this.name;
   }
 
@@ -64,6 +64,6 @@ public class ParserDirectory implements FileParserComposite {
   public void addChild(FileParserComposite child) {
     children.add(child);
     LOGGER.info(
-        () -> child.getName() + " successfully added to parent: " + this.name);
+        () -> child.getValue() + " successfully added to parent: " + this.name);
   }
 }
