@@ -32,14 +32,8 @@ public class ParserDirectory implements FileParserComposite {
   }
 
   @Override
-  public String getValue() {
+  public String getName() {
     return this.name;
-  }
-
-  @Override
-  public boolean isDirectory() {
-    // ParserDirectory is a directory
-    return true;
   }
 
   /**
@@ -64,6 +58,6 @@ public class ParserDirectory implements FileParserComposite {
   public void addChild(FileParserComposite child) {
     children.add(child);
     LOGGER.info(
-        () -> child.getValue() + " successfully added to parent: " + this.name);
+        () -> child.getName() + " successfully added to parent: " + this.name);
   }
 }

@@ -9,6 +9,7 @@ import edu.curtin.projectfileanalyzer.directoryparser.ParserFile;
 import edu.curtin.projectfileanalyzer.directoryvalidator.DirectoryValidator;
 import edu.curtin.projectfileanalyzer.matcher.CriteriaMatcher;
 import edu.curtin.projectfileanalyzer.matcher.MatcherBuilder;
+import edu.curtin.projectfileanalyzer.report.ReportType;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -110,6 +111,7 @@ public class App {
             }
 
             CriteriaMatcher criteriaMatcher;
+            ReportType reportType;
             switch (userInput) {
                 case "1":
                     criteriaMatcher = addCriteria(input);

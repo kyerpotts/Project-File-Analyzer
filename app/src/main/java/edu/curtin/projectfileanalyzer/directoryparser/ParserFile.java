@@ -34,13 +34,8 @@ public class ParserFile implements FileParserComposite {
   }
 
   @Override
-  public String getValue() {
+  public String getName() {
     return this.name;
-  }
-
-  @Override
-  public boolean isDirectory() {
-    return false;
   }
 
   @Override

@@ -7,15 +7,20 @@ package edu.curtin.projectfileanalyzer.report;
  */
 public interface ReportType {
   /**
-   * This method takes in a ReportComposite object, and displays it to screen
+   * This method takes in a ReportDirectory object, and displays it to screen
    * depending on the type of report that has been selected by the user
    *
-   * @param reportParent This object should be one of either a ReportDirectory
-   *                     or
-   *                     a ReportFile. The method will recurse through the
-   *                     ReportComposite tree and display the contents of the
-   *                     report based on the
-   *                     criteria and report type provided by the user
+   * @param reportDirectory The ReportDirectory object that is currently being
+   *                        displayed in the report
    */
-  public void writeComposite(ReportComposite reportParent);
+  public void reportOnDirectory(ReportDirectory reportDirectory);
+
+  /**
+   * This method takes in a ReportFile object, and displays it to screen
+   * depending on the type of report that has been selected by the user
+   *
+   * @param reportFile The ReportFile object that is currently being dispalyed
+   *                   within the report
+   */
+  public void reportOnFile(ReportFile reportFile);
 }
