@@ -1,6 +1,7 @@
 package edu.curtin.projectfileanalyzer.directoryparser;
 
 import edu.curtin.projectfileanalyzer.filecomposite.FileComposite;
+import edu.curtin.projectfileanalyzer.matcher.CriteriaMatcher;
 import edu.curtin.projectfileanalyzer.report.ReportComposite;
 
 /**
@@ -11,6 +12,7 @@ import edu.curtin.projectfileanalyzer.report.ReportComposite;
  * @author Kyer Potts
  */
 public interface FileParserComposite extends FileComposite {
+
   /**
    * Recurses over the FileParser tree structure in order to generate a
    * ReportComposite tree
@@ -18,5 +20,5 @@ public interface FileParserComposite extends FileComposite {
    * @param report The report object that will be used to generate a report
    *               based on user defined parameters
    */
-  public void parse(ReportComposite report);
+  public ReportComposite parse(CriteriaMatcher criteriaMatcher);
 }

@@ -15,9 +15,8 @@ import java.util.logging.Logger;
 public class ReportFile implements ReportComposite {
   private static final Logger LOGGER = Logger.getLogger(ReportFile.class.getName());
   private String name;
-  private ReportComposite parent;
+  private ReportDirectory parent;
   private List<Line> lines;
-  private int depth;
 
   /**
    * Constructor for ReportFile object
@@ -26,11 +25,9 @@ public class ReportFile implements ReportComposite {
    *               ReportComposite object
    * @param parent the ReportNode object that this object resides within
    */
-  public ReportFile(String name, ReportComposite parent, int depth) {
+  public ReportFile(String name) {
     this.name = name;
-    this.parent = parent;
     this.lines = new ArrayList<>();
-    this.depth = depth;
     LOGGER.info(() -> name + " successfully instantiated.");
   }
 
@@ -40,24 +37,33 @@ public class ReportFile implements ReportComposite {
   }
 
   @Override
-  public void updateParentSize(int nodeSize) {
-    // The parents of this object must be updated recursively in order to
-    // calculate their total enclosing size
-    parent.updateParentSize(lines.size());
-  }
-
-  @Override
   public int getSize() {
     return lines.size();
   }
 
   @Override
   public int getDepth() {
-    return this.depth; // Get the current depth of the ReportFile object
+    // Get the current depth of the ReportFile object
+    return parent.getDepth() + 1;
   }
 
   public List<Line> getLines() {
     return this.lines;
+  }
+
+  @Override
+  public void setParent(ReportDirectory parentDirectory) {
+    // Reporting behaviour will be compromised if an empty ReportFile object is
+    // added to a ReportTree
+    if (this.lines.size() < 1) {
+      throw new EmptyReportCompositeException(
+          "Empty ReportFile object can not be added to a Report tree structure");
+    }
+
+    this.parent = parentDirectory;
+    // The size of the parent directory needs to be updated as soon as this is
+    // added to its children
+    this.parent.updateParentSize(this.lines.size());
   }
 
   @Override

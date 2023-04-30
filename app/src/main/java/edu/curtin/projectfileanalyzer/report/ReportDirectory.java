@@ -11,10 +11,9 @@ import java.util.logging.Logger;
 public class ReportDirectory implements ReportComposite {
   private static final Logger LOGGER = Logger.getLogger(ReportDirectory.class.getName());
   private String name;
-  private ReportComposite parent;
+  private ReportDirectory parent;
   private List<ReportComposite> children;
   private int size;
-  private int depth;
 
   /**
    * Constructor for ReportDirectory object
@@ -23,11 +22,10 @@ public class ReportDirectory implements ReportComposite {
    *               the ReportComposite object
    * @param parent the object that this object resides within the Report tree
    */
-  public ReportDirectory(String name, ReportComposite parent, int depth) {
+  public ReportDirectory(String name) {
     this.name = name;
-    this.parent = parent;
     this.size = 0;
-    this.depth = depth;
+    this.parent = null;
     LOGGER.info(() -> name + " successfully instantiated.");
   }
 
@@ -37,22 +35,33 @@ public class ReportDirectory implements ReportComposite {
   }
 
   @Override
-  public void updateParentSize(int nodeSize) {
-    this.size += nodeSize; // Update this directory with the linecount of it's child
-    // If the parent is the root, end recurse
-    if (parent != null) {
-      parent.updateParentSize(nodeSize);
-    }
-  }
-
-  @Override
   public int getSize() {
     return this.size;
   }
 
   @Override
   public int getDepth() {
-    return this.depth; // Get the current depth of the ReportDirectory object
+    // If the parent is null, it must be the root, therefor its depth is 0
+    if (parent == null) {
+      return 0;
+    } else {
+      // Get the current depth of the ReportDirectory object
+      return parent.getDepth() + 1;
+    }
+  }
+
+  @Override
+  public void setParent(ReportDirectory parentDirectory) {
+    // Reporting behaviour will be compromised if an empty ReportDirectory
+    // object is added to a ReportTree
+    if (this.size < 1) {
+      throw new EmptyReportCompositeException(
+          "Empty ReportFile object can not be added to a Report tree structure");
+    }
+    this.parent = parentDirectory;
+    if (parent != null) { // null parent indicates that ReportDirectory is root
+      this.parent.updateParentSize(this.size);
+    }
   }
 
   @Override
@@ -72,6 +81,20 @@ public class ReportDirectory implements ReportComposite {
   public void addChild(ReportComposite child) {
     LOGGER.info(() -> "Adding child: " + child.getName());
     children.add(child);
+    // The parent of the child must be set only when the child has been added to
+    // a directory.
+    child.setParent(this); //
     LOGGER.info(() -> child.getName() + " successfully added as a child");
+  }
+
+  /**
+   * Allows the children of this class to update it's size (number of lines
+   * contained within) whenever this object is set as the parent of the child
+   *
+   * @param nodeSize
+   */
+  public void updateParentSize(int nodeSize) {
+    this.size += nodeSize; // Update this directory with the linecount of it's child
+    // If the parent is the root, end recurse
   }
 }

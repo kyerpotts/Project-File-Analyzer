@@ -1,6 +1,8 @@
 package edu.curtin.projectfileanalyzer.directoryparser;
 
+import edu.curtin.projectfileanalyzer.matcher.CriteriaMatcher;
 import edu.curtin.projectfileanalyzer.report.ReportComposite;
+import edu.curtin.projectfileanalyzer.report.ReportFile;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -15,7 +17,6 @@ import java.util.logging.Logger;
  * @author Kyer Potts
  */
 public class ParserFile implements FileParserComposite {
-  // TODO: Log appropriately throughout this class
   private static final Logger LOGGER = Logger.getLogger(ParserFile.class.getName());
   private String name;
   private List<Line> lines;
@@ -39,9 +40,19 @@ public class ParserFile implements FileParserComposite {
   }
 
   @Override
-  public void parse(ReportComposite report) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'parse'");
+  public ReportComposite parse(CriteriaMatcher criteriaMatcher) {
+    ReportFile reportFile = new ReportFile(this.name);
+
+    for (Line line : lines) {
+      if (criteriaMatcher.includeLine(line)) {
+        reportFile.addLine(line);
+        LOGGER.info(() -> "Line " + line.getNumber() +
+            " in file: " + this.name +
+            " matches given criteria. Added to report.");
+      }
+    }
+
+    return reportFile;
   }
 
   /**

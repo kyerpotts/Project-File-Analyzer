@@ -30,13 +30,13 @@ public interface ReportComposite extends FileComposite {
   public int getDepth();
 
   /**
-   * Provides a contract for ReportComposite objects to recursively update their
-   * parent node size when their contents changes
+   * Allows the parent class of an object to set it's childrens parent field
+   * when adding it to it's list of children
    *
-   * @param nodeSize is the current size of the ReportComposite leaf. This will
-   *                 allow parents to recursively update their own size
+   * @param parentDirectory the parent directory that the object is being added
+   *                        to as a child
    */
-  public void updateParentSize(int nodeSize);
+  public void setParent(ReportDirectory parentDirectory);
 
   /**
    * Provides a contract method that allows the ReportComposite to recurse

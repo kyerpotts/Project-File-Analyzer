@@ -1,6 +1,8 @@
 package edu.curtin.projectfileanalyzer.directoryparser;
 
+import edu.curtin.projectfileanalyzer.matcher.CriteriaMatcher;
 import edu.curtin.projectfileanalyzer.report.ReportComposite;
+import edu.curtin.projectfileanalyzer.report.ReportDirectory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -12,7 +14,6 @@ import java.util.logging.Logger;
  * @author Kyer Potts
  */
 public class ParserDirectory implements FileParserComposite {
-  // TODO: Log appropriately through the methods contained in this class
   private static final Logger LOGGER = Logger.getLogger(ParserDirectory.class.getName());
   private String name;
   private List<FileParserComposite> children;
@@ -36,17 +37,26 @@ public class ParserDirectory implements FileParserComposite {
     return this.name;
   }
 
-  /**
-   * Iterates over the list of children and calls the parse method recursively
-   * in order to generate the report tree
-   *
-   * @param report The report object that will be used to generate a report
-   *               based on user defined parameters
-   */
   @Override
-  public void parse(ReportComposite report) {
-    // TODO: Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'parse'");
+  public ReportComposite parse(CriteriaMatcher criteriaMatcher) {
+    ReportDirectory reportDirectory = new ReportDirectory(this.getName());
+    // Parse recursively through all children to continue building the Report
+    // tree
+    for (FileParserComposite parser : children) {
+      ReportComposite reportChild = parser.parse(criteriaMatcher);
+      // A child should only be added to the parent directory if it contains
+      // lines within its substructure
+      if (reportChild.getSize() > 0) {
+        reportDirectory.addChild(reportChild);
+        LOGGER.info(
+            () -> "Child: " + reportChild.getName() +
+                " is valid size. Parser has added to children of " +
+                reportDirectory.getName());
+      }
+    }
+    // The reportDirectory is always returned even if it is empty. This allows
+    // the root folder to be reported even if it is empty
+    return reportDirectory;
   }
 
   /**
