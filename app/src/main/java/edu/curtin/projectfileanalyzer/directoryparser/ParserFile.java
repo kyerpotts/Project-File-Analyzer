@@ -66,12 +66,17 @@ public class ParserFile implements FileParserComposite {
     try (BufferedReader fileReader = new BufferedReader(new FileReader(file))) {
       int lineNumber = 0; // Initialised at 0 in case the file is empty
       String lineContent;
-      // Reads lines from the file into lineContent until all of the file
-      // contents have been read
-      while ((lineContent = fileReader.readLine()) != null) {
-        lineNumber++; // lineNumber must be incremented to accurately represent
-                      // the line location
-        addNewLine(lineNumber, lineContent);
+      // If the file is a log file, and the program is analyzing itself, it may
+      // run forever as new logs are added to the file.
+      // TODO: Remove this if statement when shipping project.
+      if (!file.getName().contains(".log")) {
+        // Reads lines from the file into lineContent until all of the file
+        // contents have been read
+        while ((lineContent = fileReader.readLine()) != null) {
+          lineNumber++; // lineNumber must be incremented to accurately
+                        // represent the line location
+          addNewLine(lineNumber, lineContent);
+        }
       }
     } catch (IOException e) {
       LOGGER.warning(

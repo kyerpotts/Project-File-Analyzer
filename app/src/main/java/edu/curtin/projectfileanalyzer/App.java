@@ -67,10 +67,12 @@ public class App {
                 LOGGER.info(
                         () -> "User supplied argument points to a valid directory for use within the rest of the program");
                 LOGGER.info(() -> "Program has entered main execution state.");
-                System.out.println("Building Parser tree...");
+
                 // Create a root directory for the parser
+                System.out.println("Building Parser tree...");
                 ParserDirectory rootParser = new ParserDirectory(rootFile.getName());
-                LOGGER.info(() -> "Root parser successfully initialised");
+                LOGGER.info(() -> "Parser root successfully initialised");
+
                 // Build the rest of the parser tree structure from the parser root
                 buildFileParser(rootFile, rootParser);
                 System.out.println("Parser tree complete!");

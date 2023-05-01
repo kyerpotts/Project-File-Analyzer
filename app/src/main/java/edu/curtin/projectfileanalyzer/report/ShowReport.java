@@ -40,8 +40,7 @@ public class ShowReport implements ReportType {
       tabDepth += "  "; // Alignment indents is two spaces for readability
     }
     // Print the name and number of lines contained within the ReportObject
-    System.out.println(tabDepth + reportComposite.getName() + ": " +
-        reportComposite.getSize() + " lines");
+    System.out.println(tabDepth + reportComposite.getName());
   }
 
   /**

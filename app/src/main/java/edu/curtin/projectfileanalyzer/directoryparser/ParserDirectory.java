@@ -29,7 +29,7 @@ public class ParserDirectory implements FileParserComposite {
     this.name = name;
     children = new ArrayList<>();
     LOGGER.info(
-        () -> "Parser Directory: " + this.name + " successfully created");
+        () -> "Parser Directory: " + this.name + "/ successfully created");
   }
 
   @Override

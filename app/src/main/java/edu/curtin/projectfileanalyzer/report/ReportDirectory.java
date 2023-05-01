@@ -1,5 +1,6 @@
 package edu.curtin.projectfileanalyzer.report;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -26,6 +27,7 @@ public class ReportDirectory implements ReportComposite {
     this.name = name;
     this.size = 0;
     this.parent = null;
+    children = new ArrayList<>();
     LOGGER.info(() -> name + " successfully instantiated.");
   }
 
