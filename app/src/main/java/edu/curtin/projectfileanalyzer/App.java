@@ -2,6 +2,7 @@ package edu.curtin.projectfileanalyzer;
 
 import edu.curtin.projectfileanalyzer.directoryparser.ParserDirectory;
 import edu.curtin.projectfileanalyzer.directoryparser.ParserFile;
+import edu.curtin.projectfileanalyzer.directoryvalidator.DirectoryPathException;
 import edu.curtin.projectfileanalyzer.directoryvalidator.DirectoryValidator;
 import java.io.BufferedReader;
 import java.io.File;
@@ -41,7 +42,6 @@ public class App {
         // used within the program
         DirectoryValidator dirValidator = new DirectoryValidator();
 
-        AnalyzerMenu menu;
         boolean executeProgram = false; // Determines whether program can continue without major errors
 
         try {
@@ -64,6 +64,7 @@ public class App {
             // The program has found a valid path and the program can execute
             // accordingly
             if (executeProgram == true) {
+                AnalyzerMenu menu;
                 LOGGER.info(
                         () -> "User supplied argument points to a valid directory for use within the rest of the program");
                 LOGGER.info(() -> "Program has entered main execution state.");

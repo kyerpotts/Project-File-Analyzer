@@ -1,4 +1,4 @@
-package edu.curtin.projectfileanalyzer;
+package edu.curtin.projectfileanalyzer.directoryvalidator;
 
 /**
  * This exception should be thrown when there is a problem with the arguments

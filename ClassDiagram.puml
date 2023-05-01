@@ -1,0 +1,180 @@
+@startuml
+
+title Project File Analyzer\nClass Diagram
+
+'CLASSES
+
+class App {
+    + main(String[] args): void
+    - buildFileParser(File directory, ParserDirectory parent): void
+}
+App *--> "1" directoryvalidator.DirectoryValidator
+App *--> "1" AnalyzerMenu
+App o--> "1..*" directoryparser.ParserDirectory
+App o--> "0..*" directoryparser.ParserFile
+App -->  directoryvalidator.DirectoryPathException: handles
+
+class AnalyzerMenu {
+    + executeMenu(FileParserComposite fileParser): void
+    + displayReport(FileParserComposite fileParser, CriteriaMatcher criteriaMatcher, ReportType reportType): void
+    -  printMenuOptions(): void
+    - addCriteria(BufferedReader input): CriteriaMatcher
+    -  chooseReportType(BufferedReader input): ReportType
+}
+AnalyzerMenu o..> "1" directoryparser.FileParserComposite
+AnalyzerMenu o..> "1" matcher.CriteriaMatcher
+AnalyzerMenu o..> "1" report.ReportType
+AnalyzerMenu o..> "1" report.ReportComposite
+AnalyzerMenu o..> "0..1" java.io.File
+AnalyzerMenu *..> "1" matcher.MatcherBuilder
+AnalyzerMenu ..> "0..1" report.CountReport: instantiates
+AnalyzerMenu ..> "0..1" report.ShowReport: instantiates
+AnalyzerMenu --> InvalidReportArgumentsException: throws
+
+
+class InvalidReportArgumentsException {
+}
+
+package "filecomposite" {
+    interface FileComposite {
+        + getName(): String
+    }
+}
+
+package "directoryparser" {
+    interface FileParserComposite extends filecomposite.FileComposite {
+        + parse(CriteriaMatcher criteriaMatcher): ReportComposite
+    }
+    FileParserComposite *..> "1" matcher.CriteriaMatcher
+    FileParserComposite ..> "0..*" report.ReportComposite
+
+    class ParserDirectory implements FileParserComposite {
+        - String name
+        - List<FileParserComposite> children
+        +  addChild(FileParserComposite child): void
+    }
+    ParserDirectory *--> "0..*" FileParserComposite
+    ParserDirectory --> "0..*" report.ReportDirectory: instantiates
+    ParserDirectory --> "0..*" report.ReportFile: instantiates
+
+    class ParserFile implements FileParserComposite {
+        - String name
+        - List<Line> lines
+        +  addFileData(File file) <<throws>> IOException: void
+        - addNewLine(int lineNumber, String lineContent): void
+    }
+    ParserFile *--> "0..*" Line
+    ParserFile --> "0..*" report.ReportFile: instantiates
+
+    class Line {
+        - int number
+        - String content;
+        + getNumber(): int
+        +  getContent(): String
+    }
+}
+
+package "directoryvalidator" {
+    class DirectoryValidator {
+        + determinePath(String[] path): String
+        +  isValidPath(File root): boolean
+
+    }
+    DirectoryValidator --> DirectoryPathException: throws
+    DirectoryValidator o..> java.io.File
+
+    class DirectoryPathException {
+    }
+}
+
+package "matcher" {
+    class CriteriaMatcher{
+        - Map<String, List<LineMatcher>> matcherMap
+        +  includeLine(Line line): boolean
+    }
+    CriteriaMatcher *--> "0..*" LineMatcher
+    CriteriaMatcher --> directoryparser.Line: uses
+
+    interface LineMatcher {
+        +  match(Line line): boolean
+    }
+    LineMatcher --> directoryparser.Line: uses
+
+    class MatcherBuilder {
+        + List<String> criteriaList
+        + Map<String, List<LineMatcher>> matcherMap
+        + requestMatcherInput(BufferedReader input): void
+        + buildCriteriaMatcher(): CriteriaMatcher
+        - validateInput(String[] criteriaInput): boolean
+        - insertCriteria(String[] parsedCriteria): void
+
+    }
+    MatcherBuilder *--> "0..*" LineMatcher
+    MatcherBuilder --> "1" CriteriaMatcher: instantiates
+    MatcherBuilder --> "0..*" RegexMatcher: instantiates
+    MatcherBuilder --> "0..*" TextMatcher: instantiates
+
+    class RegexMatcher implements LineMatcher {
+    }
+
+    class TextMatcher implements LineMatcher {
+    }
+}
+
+package "report" {
+    interface ReportComposite extends filecomposite.FileComposite {
+        + getSize(): int
+        + getDepth(): int
+        + setParent(ReportDirectory parentDirectory): void
+        +  writeReport(ReportType reportType): void
+    }
+    ReportComposite --> ReportDirectory: uses
+    ReportComposite o..> ReportType: uses
+
+    interface ReportType {
+        + reportOnDirectory(ReportDirectory reportDirectory): void
+        + reportOnFile(ReportFile reportFile): void
+    }
+    ReportType o..> "1" ReportDirectory
+    ReportType o..> "1" ReportFile
+
+    class ReportDirectory implements ReportComposite {
+        - String name
+        - ReportDirectory parent
+        - List<ReportComposite> children
+        - int size
+        + addChild(ReportComposite child): void
+        + updateParentSize(int nodeSize): void
+    }
+    ReportDirectory *--> "0..*" ReportComposite
+    ReportDirectory *--> "0..1" ReportDirectory
+    ReportDirectory --> EmptyReportCompositionException: throws
+
+    class ReportFile implements ReportComposite {
+        - String name
+        - ReportDirectory parent
+        - List<Line> lines
+        + getLines(): List<Line>
+        + addLine(Line line): void
+    }
+    ReportFile *--> "0..1" ReportDirectory
+    ReportFile *--> "0..*" directoryparser.Line
+    ReportFile --> EmptyReportCompositionException: throws
+
+    class CountReport implements ReportType {
+        - writeComposite(ReportComposite reportComposite): void
+    }
+    CountReport o..> "1" ReportComposite
+
+    class ShowReport implements ReportType {
+        - writeComposite(ReportComposite reportComposite): void
+        - writeFileContents(ReportFile reportFile): void
+    }
+    ShowReport o..> "1" ReportComposite
+    ShowReport o..> "1" ReportFile
+
+    class EmptyReportCompositionException {
+    }
+}
+
+@enduml

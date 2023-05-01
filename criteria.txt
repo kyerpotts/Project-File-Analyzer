@@ -1,0 +1,99 @@
+Responses to marking criteria:
+1.  General code quality
+    - The code is reasonably commented throughout the program.
+      I have used a javadocs style of commenting to catalogue the major functionality of the program.
+      Inline comments have been used to provide context to code that might otherwise appear ambiguous.
+      This style of commenting was chosen as I believe my method and variable naming style is sufficient to explain the majority of what the program is doing at any point in time.
+      I have written my comments like this as I believe that overcommenting leads to poor maintainability; any time something is rewritten within the program, all of the comments must be updated to reflect the change also.
+    
+    - PMD violations
+      I have run a pmd check and there are no rule violations according to the oose-pmd-rules.xml ruleset provided.
+
+2.  Appropriate use of containers
+    - Lists
+      The main containers I found use for within this code were Lists. Sets could have been used in place of Lists in some instances, however their distinction for those uses were arbitrary, and they provided no additional functionality.
+      Lists were used mainly as containers that could be easily iterated over to retrieve a single instance of an object, and perform an operation with it or on it.
+      Their use can be seen in the ParserDirectory.class, ParserFile.class, MatcherBuilder.class, ReportDirectory.class, ReportFile.class, and in combination with a Map in CriteriaMatcher.class.
+
+    - Maps
+      I used a map to manage the exclusion and inclusion criteria. The problem description explicitly states that the exclusion criteria must be checked before the inclusion criteria. This meant that the criteria had to be separated based upon a type.
+      I could have separated the inclusion and exclusion criteria as class implementations of a common interface, but that would have lead to a small class explosion, as I would have needed four different implementations to handle "exclude text", "exclude regex", "include text" and "include regex".
+      By using 'i' and 'e' as keys for lists of types of matchers, I have reduced unnecessary abstraction *(see below why I seek to reduce abstraction) while still maintaining a separation of intended functionality
+
+      * I believe that abstraction is more difficult to maintain than implementation if they both achieve the same result. Implementation results in localised changes whenever change is required, which results in almost no coupling. Abstraction, even in the form of contractual abstraction, results in coupling between abstractions and implementation classes. This kind of coupling is one of the tightest forms, and in my opinion should be avoided. 
+
+3.  Clear and distinct class/interface/method responsibilities
+    - Interfaces
+      OOSE teaches the power of abstraction through the use of design patterns, but it rarely discusses the cost of abstraction.
+      Abstraction, via interfaces or abstract implementations introduces a large amount of coupling and technical debt that should often be avoided in place of simplicity.
+
+      To demonstrate this, I have a superfluous interface(FileComposite) that two other necessary interfaces (FileParserComposite and ReportComposite) extend.
+      FileParserComposite and ReportComposite inherit a single method declaration from FileComposite, and both classes use that declaration with each of their implementations. In this situation, FileComposite appears to be a perfectly valid abstraction.
+      Consider that FileParserComposite and ReportComposite need to be accessed polymorphically to implement a new feature. The current FileComposite abstraction can be leveraged to provide that functionality by adding additional method declarations.
+      Later, another class is created that requires the polymorphic methods added with the last feature, but doesn't require the "getName()" method.
+      In this situation, the developer is faced with a choice, implement useless functionality in the new class, or refactor an abstraction tree further in order to separate functionality.
+
+      Whenever possible, I have reduced the amount of contractual coupling within this program by providing implementation level method declarations, and ensuring they are no longer required when polymorphic functionality is.
+      This can best be seen with the instantiation of ReportDirectory and ReportFile objects by FileParserComposite.parse(). This has allowed the ReportDirectory and ReportFile objects to update their parents size recursively from the bottom of the tree to the top as an implementation level callback, before being added to a polymorphic structure.
+      This has resulted in a huge reduction in execution cycles necessary to calculate the number of matched lines contained in each subdirectory (another full recursive sweep of every directory and file would have been needed), and allows the parent directory itself to decide whether to include it's contents within the report as the report is being populated.
+
+    - Class and method responsibilities
+      The single responsibility principle has been applied throughout the program whenever it is reasonable to do so. As with all the tenets of uncle Bob's "clean code", there is a tradeoff between increasing maintainability and reducing the overall performance of the code.
+      To achieve this this balance, I wrote the implementation of my methods with 2 questions in mind: Will this code block need to be reused, and might this code block need to be refactored as the program functionality is extended.
+      As a result, there are several methods within this program that may do more than a single thing. A good example of this is my main method. If the single responsibility principle was applied to that method, various states of execution (argument validation, menu execution, user input requests) and the control flow of the program could have been relegated to their own individual methods, possibly their own classes.
+      Doing this may slightly increase readability, but it reduces refactorability and maintainability.
+      If the functionality of the main method is wrapped in single responsibility methods (another form of unnecessary abstraction), each of those methods may need to be updated if a new feature is added, or refactoring is required. Making changes locally is always less costly to making changes to abstractions. Uncle Bob is not the messiah.
+      As such, if a particular piece of implementation code is required by other parts of the program, I have wrapped it within a single responsibility method and class.
+      However, if that implemenation code is not currently required by other parts of the program, it has not been wrapped in a single responsibility method. An example of this is in the MatcherBuilder.buildCriteriaMatcher() method. According to the single responsibility principle, a new private method to initialise the lists in the matcherMap object.
+      This is uneccessary and wasteful. It would not increase readability as it is already clear what is happening, and it does not increase maintainability as it's generally easier to maintain localised code. The only thing that a single responsibility abstraction achieves in this case is adding another function to the call stack.
+
+
+4.  Appropriate error handling and logging
+    - Error Handling
+      Exceptions are a heavy handed approach to error handling, and in my opinion, should only be used to allow some form of logging to occur.
+      Guards are far more effective at handling external errors, as they can be more effectively used to guide the flow of the program and control it's state than exceptions.
+      For internal errors, I prefer using assertions to catch unwanted states than exceptions, as assertions can generally be disabled during compilation allowing production code to run faster than if it was littered with conditional statements that throw errors on an invalid state, and fail immediately, whereas internal exceptions (runtime exceptions in java) do no always throw at the exact point that there is a state error.
+      In order to demonstrate that I understand how and when to use each of these, I have implemented internal and external exceptions, control guards for user input, and assertions for invalid state handling throughout the project.
+
+      Internal Error:
+        EmptyReportCompositeException is an internal error based exception thrown by ReportDirectory.setParent() and ReportFile.setParent() when it attempts to attach to a parent and is empty. This is invalid internal behaviour.
+        Assertions for invalid object states in CountReport.class, ShowReport.class and MatcherBuilder.class catches invalid states of objects before they are used and result in incorrect behaviour.
+
+        In this context, I have used assertions to catch invalid states before they can produce invalid behaviour, and exceptions to catch invalid behaviour during the invocation of the behaviour.
+
+      External Errors:
+        I have two external error exceptions that are thrown when user input or the lack of it causes a problem.
+        The first is InvalidReportArgumentException. This is thrown whenever the user tries to generate a report, and have not provided any matching criteria, or chosen a report type. An exception was used here as the program should not attempt to execute without this input. Guard conditions are inappropriate here as control flow of the program should not change.
+        The second is DirectoryPathException. This is thrown when the user enters an invalid number of arguments to the program when they execute it. An exception was used here as program functionality should not execute further without valid input. The program should also not make any distinction or error correction on the input, as it is not context aware and should not be trusted to make that decision.
+
+        Guard conditions are used throughout the program when requesting user input that may result in the control flow of the program changing.
+        This can be seen when requesting and building criteria based on user input, or in the various switch cases used to control menu options. 
+
+    - Logging
+      Logging has been used extensively to show when and where objects are created and certain behaviour is invoked.
+
+5.  Appropriate use of the Strategy pattern and/or Template Method pattern
+    - Strategy pattern
+      I have used the strategy pattern twice within this program.
+      The first is with the LineMatcher interface and the RegexMatcher and TextMatcher implementations.
+      The second is with the ReportType interface and the CountReport and ShowReport implementations.
+
+      LineMatcher provides a method declaration that allows different matching behavior to occur between RegexMatcher and TextMatcher. This is especially useful as it is used within a Map that separates exclusion/inclusion behaviour of any found matches.
+
+      ReportType could quite easily have been the Template Method pattern, however I believe that composition is always preferable over inheritance.
+      Because of this, I used ReportType as a strategy pattern and introduced it as a dependency to the writeReport() method declared in ReportComposite.class.
+      This allows different reporting behaviour to occur from within implementation classes, localising control structures instead of having them embedded in an abstract inheritance heirarchy.
+      By using composition over inheritance, and the strategy pattern over the template method pattern, parent-subclass coupling is non-existant, and a good deal of technical debt can be avoided.
+
+6.  Appropriate use of the Composite pattern
+    I have used the composite pattern twice throughout this program. The first is the FileParserComposite. The second is the ReportComposite.
+    - FileParserComposite
+      The assignment specification dictates that the entire directory structure is loaded into memory when the program is executed. I have implemented the composite pattern here to make a distinction between directories and files contained within the path supplied by the user.
+
+    - ReportComposite
+      In order to determine what is to be included in the report, it was necessary to create another composite structure that comprised of only elements that matched the user entered criteria.
+      This was useful for two reasons:
+        The first being that it allows the program to exclude directories that contain 0 matched lines within it's substructure.
+        The second was that the size of the containing directory could be updated dynamically by a recursive call as the tree structure is built.
+
+    Without a second composite tree structure, the report would have to be built, and then re-parsed to exclude any invalid or unwanted information such as directories containing 0 matches.

@@ -1,6 +1,5 @@
 package edu.curtin.projectfileanalyzer.directoryvalidator;
 
-import edu.curtin.projectfileanalyzer.DirectoryPathException;
 import java.io.File;
 import java.util.logging.Logger;
 

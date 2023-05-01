@@ -58,7 +58,7 @@ public class ReportDirectory implements ReportComposite {
     // object is added to a ReportTree
     if (this.size < 1) {
       throw new EmptyReportCompositeException(
-          "Empty ReportFile object can not be added to a Report tree structure");
+          "Empty ReportDirectory object can not be added to a Report tree structure");
     }
     this.parent = parentDirectory;
     if (parent != null) { // null parent indicates that ReportDirectory is root
