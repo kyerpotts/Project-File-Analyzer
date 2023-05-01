@@ -37,6 +37,13 @@ public class AnalyzerMenu {
     String userInput = null;
     // Used to control program flow depending on user request
     boolean continueMenuLoop = true;
+
+    // These could be dependency injected, but there is really no point as this
+    // class contols the main control flow of the program
+    CriteriaMatcher criteriaMatcher = null;
+    ReportType reportType = null;
+
+    // Enter main control loop of the program
     while (continueMenuLoop) {
       // Display available options to the user
       printMenuOptions();
@@ -51,12 +58,6 @@ public class AnalyzerMenu {
       if (userInput == null) {
         userInput = "";
       }
-
-      // These could be dependency injected, but there is really no point
-      // injecting into this class as it dictates the majority of the control
-      // flow of the program
-      CriteriaMatcher criteriaMatcher = null;
-      ReportType reportType = null;
 
       switch (userInput) {
         case "1":
@@ -74,7 +75,7 @@ public class AnalyzerMenu {
           } catch (InvalidReportArgumentsException e) {
             System.out.println(e.getMessage());
             LOGGER.warning(
-                "User attempted to display report without initialising components: " +
+                () -> "User attempted to display report without initialising components: " +
                     e.getMessage());
           }
           break;

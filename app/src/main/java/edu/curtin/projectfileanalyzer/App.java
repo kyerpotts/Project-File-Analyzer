@@ -24,15 +24,23 @@ import java.util.logging.Logger;
  * information depending upon the format type chosen by the user.
  */
 public class App {
-    // TODO: Log appropriately throughout this class
     private static final Logger LOGGER = Logger.getLogger(App.class.getName());
 
+    /**
+     * Main entry point for the ProjectFileAnalyzer program
+     *
+     * @param args user supplied arguments that should point to a directory within
+     *             the system
+     */
     public static void main(String[] args) {
-        // Required to read user input throughout the program
-        BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-        // A rootFile object is required in order to build the parser
+        // A rootFile object is required in order to build the parser. It is set to
+        // null initially as user arguments must first be validated.
         File rootFile = null;
+
+        // DirectoryValidator ensures user supplied arguments are correct and can be
+        // used within the program
         DirectoryValidator dirValidator = new DirectoryValidator();
+
         AnalyzerMenu menu;
         boolean executeProgram = false; // Determines whether program can continue without major errors
 
@@ -51,49 +59,50 @@ public class App {
             System.out.println("FATAL ERROR: " + e.getMessage());
         }
 
-        // The program has found a valid path and the program can execute
-        // accordingly
-        if (executeProgram == true) {
-            LOGGER.info(
-                    () -> "User supplied argument points to a valid directory for use within the rest of the program");
-            LOGGER.info(() -> "Program has entered main execution state.");
-            // Create a root directory for the parser
-            ParserDirectory rootParser = new ParserDirectory(rootFile.getName());
-            LOGGER.info(() -> "Root parser successfully initialised");
-            // Build the rest of the parser tree structure from the parser root
-            buildFileParser(rootFile, rootParser);
-            LOGGER.info(() -> "Parser tree successfully initialised");
+        // Required to read user input throughout the program
+        try (BufferedReader input = new BufferedReader(new InputStreamReader(System.in))) {
+            // The program has found a valid path and the program can execute
+            // accordingly
+            if (executeProgram == true) {
+                LOGGER.info(
+                        () -> "User supplied argument points to a valid directory for use within the rest of the program");
+                LOGGER.info(() -> "Program has entered main execution state.");
+                System.out.println("Building Parser tree...");
+                // Create a root directory for the parser
+                ParserDirectory rootParser = new ParserDirectory(rootFile.getName());
+                LOGGER.info(() -> "Root parser successfully initialised");
+                // Build the rest of the parser tree structure from the parser root
+                buildFileParser(rootFile, rootParser);
+                System.out.println("Parser tree complete!");
+                LOGGER.info(() -> "Parser tree successfully initialised");
 
-            // The menu should only be executed once the parser has finished
-            // being built
-            menu = new AnalyzerMenu(input);
-            menu.executeMenu(rootParser);
-        } else {
-            LOGGER.info(
-                    () -> "User supplied argument does not point to a valid directory");
-            System.out.println(
-                    "Provided path does not point to a directory on this system: " +
-                            rootFile.getName());
-            System.out.println("Please check the path and try again.");
-        }
+                // The menu should only be executed once the parser has finished
+                // being built
+                menu = new AnalyzerMenu(input);
+                menu.executeMenu(rootParser);
+            } else {
+                LOGGER.info(
+                        () -> "User supplied argument does not point to a valid directory");
+                System.out.println(
+                        "Provided path does not point to a directory on this system: " +
+                                rootFile.getName());
+                System.out.println("Please check the path and try again.");
+            }
 
-        // Close input stream before exiting the program to ensure no leaks
-        try {
-            input.close();
-            LOGGER.info("Input reader successfully closed");
         } catch (IOException e) {
             LOGGER.severe(() -> e.getMessage());
         }
+        LOGGER.info("Input reader successfully closed.");
+        LOGGER.info("Program exiting.");
     }
 
     /**
      * Builds a FileParser tree structure recursively
      *
      * @param directory the current File object that the function is recursing
-     *                  over. This must always be a directory
+     *                  over. This must always be a directory.
      * @param parent    The current ParserDirectory that the function is
-     *                  recursively
-     *                  adding new children to
+     *                  recursively adding new children to.
      */
     private static void buildFileParser(File directory, ParserDirectory parent) {
         LOGGER.info(() -> "Building parser directory " + parent.getName() + ".");
@@ -109,7 +118,7 @@ public class App {
                 try {
                     newParserFile.addFileData(file);
                 } catch (IOException e) {
-                    LOGGER.warning(e.getMessage());
+                    LOGGER.warning(() -> e.getMessage());
                     System.out.println(
                             "Problem adding data to" + newParserFile.getName() +
                                     " occured. Parser data may not be accurate for reporting purposes.");
